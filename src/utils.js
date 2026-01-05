@@ -182,26 +182,41 @@ export function formatTime(datetime) {
 }
 
 /**
- * Get sunrise and sunset data from weather entity
+ * Get sunrise and sunset data from weather entity or separate sensors
  * @param {Object} weatherState - Weather entity state
+ * @param {string|null} sunriseEntity - Optional separate sunrise sensor entity ID
+ * @param {string|null} sunsetEntity - Optional separate sunset sensor entity ID
+ * @param {Object} hass - Home Assistant object
  * @returns {{sunrise: Date|null, sunset: Date|null, hasSunData: boolean}}
  */
-export function getSunriseSunsetData(weatherState) {
-  if (!weatherState || !weatherState.attributes) {
-    return { sunrise: null, sunset: null, hasSunData: false };
-  }
-
-  const attrs = weatherState.attributes;
+export function getSunriseSunsetData(weatherState, sunriseEntity = null, sunsetEntity = null, hass = null) {
   let sunrise = null;
   let sunset = null;
 
-  // Try different attribute names that weather providers might use
-  if (attrs.forecast_sunrise || attrs.sunrise) {
-    sunrise = new Date(attrs.forecast_sunrise || attrs.sunrise);
+  // Try to get from separate sensors first (if configured)
+  if (sunriseEntity && hass && hass.states[sunriseEntity]) {
+    const sunriseState = hass.states[sunriseEntity];
+    sunrise = new Date(sunriseState.state);
   }
 
-  if (attrs.forecast_sunset || attrs.sunset) {
-    sunset = new Date(attrs.forecast_sunset || attrs.sunset);
+  if (sunsetEntity && hass && hass.states[sunsetEntity]) {
+    const sunsetState = hass.states[sunsetEntity];
+    sunset = new Date(sunsetState.state);
+  }
+
+  // If not found in separate sensors, try weather entity attributes
+  if (!sunrise || !sunset) {
+    if (weatherState && weatherState.attributes) {
+      const attrs = weatherState.attributes;
+
+      if (!sunrise && (attrs.forecast_sunrise || attrs.sunrise)) {
+        sunrise = new Date(attrs.forecast_sunrise || attrs.sunrise);
+      }
+
+      if (!sunset && (attrs.forecast_sunset || attrs.sunset)) {
+        sunset = new Date(attrs.forecast_sunset || attrs.sunset);
+      }
+    }
   }
 
   return {

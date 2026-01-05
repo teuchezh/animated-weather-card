@@ -1,6 +1,6 @@
 {
   "name": "dynamic-weather-card",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Динамическая карточка погоды для Home Assistant",
   "type": "module",
   "main": "src/index.js",

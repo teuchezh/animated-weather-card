@@ -7,6 +7,7 @@ export const CONDITION_EMOJI = {
   'clear': '☀️',
   'clear-night': '🌙',
   'partlycloudy': '⛅',
+  'overcast': '☁️',
   'cloudy': '☁️',
   'rainy': '🌧️',
   'pouring': '🌧️',
@@ -24,6 +25,7 @@ export const CONDITION_EMOJI = {
 export const CONDITION_NAMES = {
   'sunny': 'Солнечно',
   'clear': 'Ясно',
+  'overcast': 'Пасмурно',
   'cloudy': 'Облачно',
   'partlycloudy': 'Переменная облачность',
   'rainy': 'Дождь',

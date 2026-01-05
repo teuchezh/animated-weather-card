@@ -296,7 +296,7 @@ export class AnimatedWeatherCard extends LitElement {
 
     const weather = this.getWeatherData();
     const weatherState = this.hass.states[this.config.entity];
-    const sunData = getSunriseSunsetData(weatherState);
+    const sunData = getSunriseSunsetData(weatherState, this.config.sunriseEntity, this.config.sunsetEntity, this.hass);
     const timeOfDay = getTimeOfDayWithSunData(sunData);
     const cardClasses = `weather-card ${timeOfDay.type}`;
 
@@ -390,7 +390,9 @@ export class AnimatedWeatherCard extends LitElement {
       showHumidity: config.show_humidity !== false,
       showMinTemp: config.show_min_temp !== false,
       showForecast: config.show_forecast === true,
-      showSunriseSunset: config.show_sunrise_sunset !== false
+      showSunriseSunset: config.show_sunrise_sunset !== false,
+      sunriseEntity: config.sunrise_entity || null,
+      sunsetEntity: config.sunset_entity || null
     };
   }
 

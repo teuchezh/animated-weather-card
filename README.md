@@ -82,7 +82,22 @@ show_wind_direction: true
 show_wind_gust: true
 show_forecast: true
 show_sunrise_sunset: true
+sunrise_entity: sensor.yandex_pogoda_next_sunrise  # Опционально
+sunset_entity: sensor.yandex_pogoda_next_sunset    # Опционально
 ```
+
+### Пример для Яндекс.Погоды
+
+```yaml
+type: custom:dynamic-weather-card
+entity: weather.yandex_pogoda
+name: Краснодар
+show_sunrise_sunset: true
+sunrise_entity: sensor.yandex_pogoda_next_sunrise
+sunset_entity: sensor.yandex_pogoda_next_sunset
+```
+
+> **Примечание:** Яндекс.Погода не предоставляет данные восхода/заката в weather entity, поэтому необходимо указать отдельные сенсоры.
 
 ## Параметры конфигурации
 
@@ -99,6 +114,8 @@ show_sunrise_sunset: true
 | `show_wind_gust` | boolean | true | Показывать порывы ветра |
 | `show_forecast` | boolean | false | Показывать прогноз на сегодня |
 | `show_sunrise_sunset` | boolean | true | Показывать время восхода и заката |
+| `sunrise_entity` | string | - | ID сенсора восхода солнца (опционально) |
+| `sunset_entity` | string | - | ID сенсора заката солнца (опционально) |
 
 ## Поддерживаемые погодные условия
 
