@@ -87,5 +87,6 @@ export const DEFAULT_CONFIG = {
   showHumidity: true,
   showMinTemp: true,
   showForecast: false,
+  showSunriseSunset: true,
   height: null
 };

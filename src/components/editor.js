@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 
 export class AnimatedWeatherCardEditor extends LitElement {
   static get properties() {
@@ -8,31 +8,9 @@ export class AnimatedWeatherCardEditor extends LitElement {
     };
   }
 
-  static get styles() {
-    return css`
-      .card-config {
-        padding: 16px;
-      }
-      .option {
-        padding: 4px 0;
-      }
-      label {
-        display: flex;
-        align-items: center;
-        padding: 4px 0;
-      }
-      .label {
-        flex: 1;
-        margin-right: 8px;
-      }
-      ha-entity-picker,
-      ha-textfield {
-        width: 100%;
-      }
-      ha-switch {
-        margin-left: auto;
-      }
-    `;
+  // Disable shadow DOM to ensure Home Assistant components work correctly
+  createRenderRoot() {
+    return this;
   }
 
   setConfig(config) {
@@ -45,6 +23,30 @@ export class AnimatedWeatherCardEditor extends LitElement {
     }
 
     return html`
+      <style>
+        .card-config {
+          padding: 16px;
+        }
+        .option {
+          padding: 8px 0;
+        }
+        label {
+          display: flex;
+          align-items: center;
+          padding: 8px 0;
+        }
+        .label {
+          flex: 1;
+          margin-right: 8px;
+        }
+        ha-entity-picker,
+        ha-textfield {
+          width: 100%;
+        }
+        ha-switch {
+          margin-left: auto;
+        }
+      </style>
       <div class="card-config">
         <div class="option">
           <ha-entity-picker
@@ -148,6 +150,17 @@ export class AnimatedWeatherCardEditor extends LitElement {
             <ha-switch
               .checked=${this.config.show_forecast === true}
               .configValue=${'show_forecast'}
+              @change=${this._valueChanged}
+            ></ha-switch>
+          </label>
+        </div>
+
+        <div class="option">
+          <label>
+            <span class="label">Show Sunrise/Sunset</span>
+            <ha-switch
+              .checked=${this.config.show_sunrise_sunset !== false}
+              .configValue=${'show_sunrise_sunset'}
               @change=${this._valueChanged}
             ></ha-switch>
           </label>

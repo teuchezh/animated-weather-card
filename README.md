@@ -7,7 +7,7 @@
 [![HACS Validation](https://github.com/teuchezh/dynamic-weather-card/workflows/HACS%20Validation/badge.svg)](https://github.com/teuchezh/dynamic-weather-card/actions/workflows/hacs-validate.yml)
 [![License](https://img.shields.io/github/license/teuchezh/dynamic-weather-card.svg)](LICENSE)
 
-Динамическая карточка погоды в стиле iOS для Home Assistant с реалистичными анимациями на Canvas.
+Динамическая карточка погоды для Home Assistant с реалистичными анимациями на Canvas.
 
 ## Возможности
 
@@ -79,6 +79,7 @@ show_wind: true
 show_wind_direction: true
 show_wind_gust: true
 show_forecast: true
+show_sunrise_sunset: true
 ```
 
 ## Параметры конфигурации
@@ -95,6 +96,7 @@ show_forecast: true
 | `show_wind_direction` | boolean | true | Показывать направление ветра |
 | `show_wind_gust` | boolean | true | Показывать порывы ветра |
 | `show_forecast` | boolean | false | Показывать прогноз на сегодня |
+| `show_sunrise_sunset` | boolean | true | Показывать время восхода и заката |
 
 ## Поддерживаемые погодные условия
 

@@ -1,7 +1,7 @@
 {
   "name": "dynamic-weather-card",
-  "version": "0.0.1",
-  "description": "Динамическая карточка погоды в стиле iOS для Home Assistant",
+  "version": "0.1.0",
+  "description": "Динамическая карточка погоды для Home Assistant",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
@@ -15,8 +15,7 @@
     "lovelace",
     "weather",
     "card",
-    "animated",
-    "ios"
+    "animated"
   ],
   "packageManager": "yarn@1.22.19",
   "author": "teuchezh",

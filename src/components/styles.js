@@ -94,7 +94,7 @@ export const cardStyles = css`
   .details {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 12px;
   }
 
@@ -102,25 +102,6 @@ export const cardStyles = css`
     font-size: 20px;
     font-weight: 400;
     opacity: 0.9;
-  }
-
-  .extra-info-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-    font-size: 14px;
-    opacity: 0.85;
-  }
-
-  .extra-info {
-    font-size: 14px;
-    opacity: 0.8;
-    text-align: right;
-  }
-
-  .extra-info div {
-    margin-top: 4px;
   }
 
   .feels-like {
@@ -143,27 +124,27 @@ export const cardStyles = css`
     opacity: 0.7;
   }
 
-  .info-row {
-    font-size: 14px;
-    opacity: 0.85;
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 12px;
+    font-size: 13px;
+    opacity: 0.9;
+  }
+
+  .info-item {
     display: flex;
     align-items: center;
     gap: 6px;
-    white-space: nowrap;
-  }
-
-  .details .info-row {
-    font-size: 14px;
   }
 
   .info-icon {
-    font-size: 18px;
-    line-height: 1;
-    display: inline-block;
-    flex-shrink: 0;
-    opacity: 0.9;
-    width: 18px;
-    text-align: center;
+    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .forecast-container {

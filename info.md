@@ -1,6 +1,6 @@
 # Dynamic Weather Card
 
-Динамическая карточка погоды в стиле iOS для Home Assistant с реалистичными анимациями на Canvas.
+Динамическая карточка погоды для Home Assistant с реалистичными анимациями на Canvas.
 
 ## Возможности
 
@@ -34,6 +34,7 @@ show_wind: true
 show_wind_direction: true
 show_wind_gust: true
 show_forecast: true
+show_sunrise_sunset: true
 ```
 
 ## Параметры
@@ -50,6 +51,7 @@ show_forecast: true
 | `show_wind_direction` | boolean | true | Показывать направление ветра |
 | `show_wind_gust` | boolean | true | Показывать порывы ветра |
 | `show_forecast` | boolean | false | Показывать почасовой прогноз |
+| `show_sunrise_sunset` | boolean | true | Показывать время восхода и заката |
 
 ## Поддерживаемые погодные условия
 

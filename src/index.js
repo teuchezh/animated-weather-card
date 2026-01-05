@@ -12,7 +12,7 @@ try {
     `%cDynamic Weather Card %c${VERSION}`,
     'color: #007AFF; font-weight: bold; font-size: 14px;',
     'color: #666; font-size: 12px;',
-    '\nДинамическая карточка погоды в стиле iOS для Home Assistant'
+    '\nДинамическая карточка погоды'
   );
 
   // Register with Home Assistant
@@ -20,12 +20,11 @@ try {
   window.customCards.push({
     type: 'dynamic-weather-card',
     name: 'Dynamic Weather Card',
-    description: 'Динамическая карточка погоды в стиле iOS для Home Assistant',
+    description: 'Динамическая карточка погоды',
     preview: true,
     documentationURL: 'https://github.com/teuchezh/dynamic-weather-card'
   });
 
-  console.log('✅ Dynamic Weather Card зарегистрирована успешно!');
 } catch (error) {
   console.error('❌ Ошибка при регистрации Dynamic Weather Card:', error);
 }

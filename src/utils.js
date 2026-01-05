@@ -167,3 +167,92 @@ export function formatForecastTime(datetime) {
   const hours = date.getHours();
   return `${hours.toString().padStart(2, '0')}:00`;
 }
+
+/**
+ * Format time as HH:MM
+ * @param {Date|string} datetime - Date object or ISO datetime string
+ * @returns {string} Formatted time
+ */
+export function formatTime(datetime) {
+  if (!datetime) return '';
+  const date = typeof datetime === 'string' ? new Date(datetime) : datetime;
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Get sunrise and sunset data from weather entity
+ * @param {Object} weatherState - Weather entity state
+ * @returns {{sunrise: Date|null, sunset: Date|null, hasSunData: boolean}}
+ */
+export function getSunriseSunsetData(weatherState) {
+  if (!weatherState || !weatherState.attributes) {
+    return { sunrise: null, sunset: null, hasSunData: false };
+  }
+
+  const attrs = weatherState.attributes;
+  let sunrise = null;
+  let sunset = null;
+
+  // Try different attribute names that weather providers might use
+  if (attrs.forecast_sunrise || attrs.sunrise) {
+    sunrise = new Date(attrs.forecast_sunrise || attrs.sunrise);
+  }
+
+  if (attrs.forecast_sunset || attrs.sunset) {
+    sunset = new Date(attrs.forecast_sunset || attrs.sunset);
+  }
+
+  return {
+    sunrise,
+    sunset,
+    hasSunData: !!(sunrise && sunset)
+  };
+}
+
+/**
+ * Determine time of day based on sunrise/sunset or fallback to static times
+ * @param {{sunrise: Date|null, sunset: Date|null, hasSunData: boolean}} sunData - Sun data
+ * @returns {{type: string, progress: number}} Time of day info
+ */
+export function getTimeOfDayWithSunData(sunData) {
+  const now = new Date();
+
+  // If we have real sun data, use it
+  if (sunData.hasSunData && sunData.sunrise && sunData.sunset) {
+    const currentTime = now.getTime();
+    const sunriseTime = sunData.sunrise.getTime();
+    const sunsetTime = sunData.sunset.getTime();
+
+    // Calculate sunrise/sunset window (±1 hour)
+    const sunriseStart = sunriseTime - 60 * 60 * 1000; // 1 hour before
+    const sunriseEnd = sunriseTime + 60 * 60 * 1000;   // 1 hour after
+    const sunsetStart = sunsetTime - 60 * 60 * 1000;   // 1 hour before
+    const sunsetEnd = sunsetTime + 60 * 60 * 1000;     // 1 hour after
+
+    // Sunrise period
+    if (currentTime >= sunriseStart && currentTime < sunriseEnd) {
+      const progress = (currentTime - sunriseStart) / (sunriseEnd - sunriseStart);
+      return { type: 'sunrise', progress };
+    }
+
+    // Day period (after sunrise, before sunset)
+    if (currentTime >= sunriseEnd && currentTime < sunsetStart) {
+      const progress = (currentTime - sunriseEnd) / (sunsetStart - sunriseEnd);
+      return { type: 'day', progress };
+    }
+
+    // Sunset period
+    if (currentTime >= sunsetStart && currentTime < sunsetEnd) {
+      const progress = (currentTime - sunsetStart) / (sunsetEnd - sunsetStart);
+      return { type: 'sunset', progress };
+    }
+
+    // Night period
+    return { type: 'night', progress: 0 };
+  }
+
+  // Fallback to static time-based calculation
+  return getTimeOfDay();
+}

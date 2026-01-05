@@ -7,7 +7,10 @@ import {
   getIcon,
   getTimeOfDay,
   getBackgroundGradient,
-  formatForecastTime
+  formatForecastTime,
+  getSunriseSunsetData,
+  getTimeOfDayWithSunData,
+  formatTime
 } from '../utils.js';
 import { SunnyAnimation } from '../animations/sunny.js';
 import { RainyAnimation } from '../animations/rainy.js';
@@ -176,12 +179,16 @@ export class AnimatedWeatherCard extends LitElement {
 
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
     const todayForecast = weather.forecast.filter(item => {
       if (!item.datetime) return false;
       const itemDate = new Date(item.datetime);
       const itemDay = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
-      return itemDay.getTime() === today.getTime() && itemDate.getTime() > now.getTime();
+      // Show all forecasts for today (including past hours) and tomorrow until current hour
+      return itemDay.getTime() === today.getTime() ||
+             (itemDay.getTime() === tomorrow.getTime() && itemDate.getHours() <= now.getHours());
     });
 
     return todayForecast
@@ -210,7 +217,9 @@ export class AnimatedWeatherCard extends LitElement {
     this.ctx.clearRect(0, 0, width, height);
 
     const weather = this.getWeatherData();
-    const timeOfDay = getTimeOfDay();
+    const weatherState = this.hass?.states[this.config.entity];
+    const sunData = getSunriseSunsetData(weatherState);
+    const timeOfDay = getTimeOfDayWithSunData(sunData);
     const condition = weather.condition.toLowerCase();
 
     switch (condition) {
@@ -286,7 +295,9 @@ export class AnimatedWeatherCard extends LitElement {
     }
 
     const weather = this.getWeatherData();
-    const timeOfDay = getTimeOfDay();
+    const weatherState = this.hass.states[this.config.entity];
+    const sunData = getSunriseSunsetData(weatherState);
+    const timeOfDay = getTimeOfDayWithSunData(sunData);
     const cardClasses = `weather-card ${timeOfDay.type}`;
 
     let minHeight = this.config.height ? `${this.config.height}px` : '200px';
@@ -316,31 +327,37 @@ export class AnimatedWeatherCard extends LitElement {
               ` : ''}
             </div>
             <div class="details">
-              <div class="extra-info-right">
+              <div class="info-grid">
                 ${this.config.showHumidity ? html`
-                  <div class="info-row">
+                  <div class="info-item">
                     <span class="info-icon">${getIcon('humidity-icon.svg')}</span>
-                    <span>${weather.humidity}%</span>
+                    <span>${weather.humidity} %</span>
+                  </div>
+                ` : ''}
+                ${this.config.showSunriseSunset && sunData.hasSunData ? html`
+                  <div class="info-item">
+                    <span class="info-icon">🌅</span>
+                    <span>${formatTime(sunData.sunrise)}</span>
                   </div>
                 ` : ''}
                 ${this.config.showWind ? html`
                   ${this.config.showWindDirection && weather.windBearing !== null ? html`
-                    <div class="info-row">
+                    <div class="info-item">
                       <span class="info-icon">${getIcon(getWindDirectionIcon(weather.windBearing))}</span>
-                      <span>${getWindDirectionText(weather.windBearing)} ${weather.windSpeed} km/h</span>
+                      <span>${weather.windSpeed} м/с${this.config.showWindGust && weather.windGust ? ` / ${weather.windGust} м/с` : ''}</span>
                     </div>
                   ` : html`
-                    <div class="info-row">
+                    <div class="info-item">
                       <span class="info-icon">${getIcon('wind-icon.svg')}</span>
-                      <span>${weather.windSpeed} km/h</span>
+                      <span>${weather.windSpeed} м/с${this.config.showWindGust && weather.windGust ? ` / ${weather.windGust} м/с` : ''}</span>
                     </div>
                   `}
-                  ${this.config.showWindGust && weather.windGust ? html`
-                    <div class="info-row">
-                      <span class="info-icon">${getIcon('wind-gust-icon.svg')}</span>
-                      <span>Порывы: ${weather.windGust} km/h</span>
-                    </div>
-                  ` : ''}
+                ` : ''}
+                ${this.config.showSunriseSunset && sunData.hasSunData ? html`
+                  <div class="info-item">
+                    <span class="info-icon">🌇</span>
+                    <span>${formatTime(sunData.sunset)}</span>
+                  </div>
                 ` : ''}
               </div>
             </div>
@@ -371,7 +388,8 @@ export class AnimatedWeatherCard extends LitElement {
       showWindDirection: config.show_wind_direction !== false,
       showHumidity: config.show_humidity !== false,
       showMinTemp: config.show_min_temp !== false,
-      showForecast: config.show_forecast === true
+      showForecast: config.show_forecast === true,
+      showSunriseSunset: config.show_sunrise_sunset !== false
     };
   }
 

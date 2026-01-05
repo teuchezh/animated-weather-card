@@ -349,6 +349,10 @@
                         <input type="checkbox" id="show-forecast">
                         <span class="checkbox-text">Почасовой прогноз</span>
                     </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-sunrise-sunset" checked>
+                        <span class="checkbox-text">Восход/Закат</span>
+                    </label>
                 </div>
             </div>
 
@@ -452,6 +456,13 @@
         }
 
         function createMockHass(condition, temperature, humidity, windSpeed) {
+            // Create mock sunrise/sunset times (today at 6:30 and 18:45)
+            const now = new Date();
+            const sunrise = new Date(now);
+            sunrise.setHours(6, 30, 0, 0);
+            const sunset = new Date(now);
+            sunset.setHours(18, 45, 0, 0);
+
             return {
                 states: {
                     'weather.test': {
@@ -467,7 +478,9 @@
                             templow: temperature - 5,
                             pressure: 1013,
                             friendly_name: 'Тестовая погода',
-                            forecast: generateForecast(temperature)
+                            forecast: generateForecast(temperature),
+                            sunrise: sunrise.toISOString(),
+                            sunset: sunset.toISOString()
                         }
                     }
                 }
@@ -537,7 +550,8 @@
                 showWind: document.getElementById('show-wind').checked,
                 showWindDirection: document.getElementById('show-wind-direction').checked,
                 showWindGust: document.getElementById('show-wind-gust').checked,
-                showForecast: document.getElementById('show-forecast').checked
+                showForecast: document.getElementById('show-forecast').checked,
+                showSunriseSunset: document.getElementById('show-sunrise-sunset').checked
             };
 
             // Create card element
@@ -570,7 +584,8 @@
                 show_wind_gust: config.showWindGust,
                 show_humidity: config.showHumidity,
                 show_min_temp: config.showMinTemp,
-                show_forecast: config.showForecast
+                show_forecast: config.showForecast,
+                show_sunrise_sunset: config.showSunriseSunset
             });
 
             card.hass = mockHass;
@@ -615,7 +630,7 @@
             // Auto-update on checkbox changes
             const checkboxIds = [
                 'show-feels-like', 'show-min-temp', 'show-humidity',
-                'show-wind', 'show-wind-direction', 'show-wind-gust', 'show-forecast'
+                'show-wind', 'show-wind-direction', 'show-wind-gust', 'show-forecast', 'show-sunrise-sunset'
             ];
 
             checkboxIds.forEach(id => {
