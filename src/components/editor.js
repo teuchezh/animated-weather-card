@@ -169,6 +169,11 @@ export class AnimatedWeatherCardEditor extends LitElement {
     `;
   }
 
+  constructor() {
+    super();
+    this._valueChanged = this._valueChanged.bind(this);
+  }
+
   _valueChanged(ev) {
     if (!this.config) {
       return;
