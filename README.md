@@ -1,11 +1,11 @@
 # Dynamic Weather Card
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
-[![GitHub release](https://img.shields.io/github/release/teuchezh/animated-weather-card.svg)](https://github.com/teuchezh/animated-weather-card/releases)
-[![Build and Release](https://github.com/teuchezh/animated-weather-card/workflows/Build%20and%20Release/badge.svg)](https://github.com/teuchezh/animated-weather-card/actions/workflows/build.yml)
-[![Validate](https://github.com/teuchezh/animated-weather-card/workflows/Validate/badge.svg)](https://github.com/teuchezh/animated-weather-card/actions/workflows/validate.yml)
-[![HACS Validation](https://github.com/teuchezh/animated-weather-card/workflows/HACS%20Validation/badge.svg)](https://github.com/teuchezh/animated-weather-card/actions/workflows/hacs-validate.yml)
-[![License](https://img.shields.io/github/license/teuchezh/animated-weather-card.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/release/teuchezh/dynamic-weather-card.svg)](https://github.com/teuchezh/dynamic-weather-card/releases)
+[![Build and Release](https://github.com/teuchezh/dynamic-weather-card/workflows/Build%20and%20Release/badge.svg)](https://github.com/teuchezh/dynamic-weather-card/actions/workflows/build.yml)
+[![Validate](https://github.com/teuchezh/dynamic-weather-card/workflows/Validate/badge.svg)](https://github.com/teuchezh/dynamic-weather-card/actions/workflows/validate.yml)
+[![HACS Validation](https://github.com/teuchezh/dynamic-weather-card/workflows/HACS%20Validation/badge.svg)](https://github.com/teuchezh/dynamic-weather-card/actions/workflows/hacs-validate.yml)
+[![License](https://img.shields.io/github/license/teuchezh/dynamic-weather-card.svg)](LICENSE)
 
 Динамическая карточка погоды в стиле iOS для Home Assistant с реалистичными анимациями на Canvas.
 

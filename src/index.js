@@ -22,7 +22,7 @@ try {
     name: 'Dynamic Weather Card',
     description: 'Динамическая карточка погоды в стиле iOS для Home Assistant',
     preview: true,
-    documentationURL: 'https://github.com/teuchezh/animated-weather-card'
+    documentationURL: 'https://github.com/teuchezh/dynamic-weather-card'
   });
 
   console.log('✅ Dynamic Weather Card зарегистрирована успешно!');

@@ -23,7 +23,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/teuchezh/animated-weather-card"
+    "url": "https://github.com/teuchezh/dynamic-weather-card"
   },
   "dependencies": {
     "lit": "^3.0.0"
