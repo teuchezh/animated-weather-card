@@ -1,7 +1,7 @@
 {
-  "name": "Animated Weather Card",
+  "name": "Dynamic Weather Card",
   "render_readme": true,
-  "filename": "animated-weather-card.js",
+  "filename": "dist/dynamic-weather-card.js",
   "country": ["RU", "US", "GB", "DE", "FR", "ES", "IT", "NL", "PL", "CZ", "SE", "NO", "DK", "FI"]
 }
 

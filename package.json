@@ -1,11 +1,13 @@
 {
-  "name": "animated-weather-card",
-  "version": "1.0.0",
-  "description": "Красивая анимированная карточка погоды в стиле iOS для Home Assistant",
-  "main": "animated-weather-card.js",
+  "name": "dynamic-weather-card",
+  "version": "0.0.1",
+  "description": "Динамическая карточка погоды в стиле iOS для Home Assistant",
+  "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "build": "echo 'No build step required for this card'",
-    "test": "echo 'No tests specified'"
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "lint": "eslint src/"
   },
   "keywords": [
     "home-assistant",
@@ -16,13 +18,20 @@
     "animated",
     "ios"
   ],
-  "author": "",
+  "packageManager": "yarn@1.22.19",
+  "author": "teuchezh",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/teuchezh/animated-weather-card"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-terser": "^0.4.0",
+    "rollup": "^4.0.0"
+  }
 }
-

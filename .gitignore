@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+yarn-error.log
+.yarn/
+.pnp.*
+
+# Build artifacts
+*.map
+
+# GitHub Actions
+!.github/
+
+# IDE
+.vscode/
+.idea/
+.claude/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*

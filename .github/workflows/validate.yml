@@ -1,0 +1,54 @@
+name: Validate
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Validate HACS
+        run: |
+          # Check if hacs.json exists
+          if [ ! -f hacs.json ]; then
+            echo "Error: hacs.json not found"
+            exit 1
+          fi
+
+          # Check if compiled file matches hacs.json filename
+          HACS_FILENAME=$(cat hacs.json | grep -o '"filename"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4)
+          if [ ! -f "$HACS_FILENAME" ]; then
+            echo "Error: File specified in hacs.json ($HACS_FILENAME) not found"
+            exit 1
+          fi
+
+          echo "✅ HACS validation passed"
+
+      - name: Check file size
+        run: |
+          SIZE=$(wc -c < dist/dynamic-weather-card.js)
+          echo "Build size: $SIZE bytes"
+
+          # Warn if file is larger than 100KB
+          if [ $SIZE -gt 102400 ]; then
+            echo "⚠️ Warning: Build file is larger than 100KB"
+          fi
