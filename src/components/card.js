@@ -54,6 +54,7 @@ export class AnimatedWeatherCard extends LitElement {
           this.startAnimation();
           this.setupResizeObserver();
         }
+        this.setupForecastScroll();
       }, 100);
     });
   }
@@ -68,6 +69,14 @@ export class AnimatedWeatherCard extends LitElement {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
     }
+    // Clean up wheel event listener
+    if (this._wheelHandler && this.shadowRoot) {
+      const forecastScroll = this.shadowRoot.querySelector('.forecast-scroll');
+      if (forecastScroll) {
+        forecastScroll.removeEventListener('wheel', this._wheelHandler);
+      }
+      this._wheelHandler = null;
+    }
   }
 
   updated(changedProperties) {
@@ -76,6 +85,7 @@ export class AnimatedWeatherCard extends LitElement {
       if (this.canvas && this.ctx) {
         this.resizeCanvas();
       }
+      this.setupForecastScroll();
     }
   }
 
@@ -100,6 +110,27 @@ export class AnimatedWeatherCard extends LitElement {
       this.resizeCanvas();
     });
     this.resizeObserver.observe(container);
+  }
+
+  setupForecastScroll() {
+    if (!this.shadowRoot) return;
+    const forecastScroll = this.shadowRoot.querySelector('.forecast-scroll');
+    if (!forecastScroll) return;
+
+    // Remove existing listener if any
+    if (this._wheelHandler) {
+      forecastScroll.removeEventListener('wheel', this._wheelHandler);
+    }
+
+    // Add horizontal scroll on mouse wheel
+    this._wheelHandler = (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        forecastScroll.scrollLeft += e.deltaY;
+      }
+    };
+
+    forecastScroll.addEventListener('wheel', this._wheelHandler, { passive: false });
   }
 
   resizeCanvas() {
@@ -223,7 +254,9 @@ export class AnimatedWeatherCard extends LitElement {
     const weather = this.getWeatherData();
     const weatherState = this.hass?.states[this.config.entity];
     const sunData = getSunriseSunsetData(weatherState);
-    const timeOfDay = getTimeOfDayWithSunData(sunData);
+
+    // Allow test override of time of day
+    const timeOfDay = this._testTimeOfDay || getTimeOfDayWithSunData(sunData);
     const condition = weather.condition.toLowerCase();
 
     switch (condition) {
@@ -301,7 +334,9 @@ export class AnimatedWeatherCard extends LitElement {
     const weather = this.getWeatherData();
     const weatherState = this.hass.states[this.config.entity];
     const sunData = getSunriseSunsetData(weatherState, this.config.sunriseEntity, this.config.sunsetEntity, this.hass);
-    const timeOfDay = getTimeOfDayWithSunData(sunData);
+
+    // Allow test override of time of day
+    const timeOfDay = this._testTimeOfDay || getTimeOfDayWithSunData(sunData);
     const cardClasses = `weather-card ${timeOfDay.type}`;
 
     let minHeight = this.config.height ? `${this.config.height}px` : '200px';

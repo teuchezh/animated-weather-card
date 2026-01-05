@@ -169,13 +169,28 @@ export const cardStyles = css`
     gap: 16px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 8px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
   }
 
   .forecast-scroll::-webkit-scrollbar {
-    display: none;
+    height: 6px;
+  }
+
+  .forecast-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  .forecast-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+
+  .forecast-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
   }
 
   .forecast-item {

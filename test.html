@@ -557,12 +557,14 @@
             // Create card element
             card = document.createElement('dynamic-weather-card');
 
-            // Override getTimeOfDay if needed
+            // Override time of day if needed
             if (config.timeSelect === 'manual') {
-                card.getTimeOfDay = () => getTimeOfDayFromMinutes(currentManualTime);
+                card._testTimeOfDay = getTimeOfDayFromMinutes(currentManualTime);
             } else if (config.timeSelect !== 'auto') {
                 const progress = (config.timeSelect === 'sunrise' || config.timeSelect === 'sunset') ? 0.5 : 0;
-                card.getTimeOfDay = () => ({ type: config.timeSelect, progress });
+                card._testTimeOfDay = { type: config.timeSelect, progress };
+            } else {
+                card._testTimeOfDay = null;
             }
 
             // Create mock HASS object
@@ -590,16 +592,6 @@
 
             card.hass = mockHass;
             container.appendChild(card);
-
-            // Debug logging
-            setTimeout(() => {
-                const canvas = card.shadowRoot?.querySelector('canvas');
-                if (canvas) {
-                    console.log('✅ Canvas initialized:', canvas.width, 'x', canvas.height);
-                } else {
-                    console.error('❌ Canvas not found!');
-                }
-            }, 200);
         }
 
         // ============================================================================

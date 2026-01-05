@@ -4,7 +4,6 @@ import { VERSION } from './constants.js';
 // Register custom elements
 try {
   customElements.define('dynamic-weather-card', AnimatedWeatherCard);
-  console.log('✅ Registered dynamic-weather-card');
 
   // Log version info
   console.log(
