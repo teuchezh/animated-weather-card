@@ -9,7 +9,7 @@
 [![HACS Validation](https://github.com/teuchezh/dynamic-weather-card/workflows/HACS%20Validation/badge.svg)](https://github.com/teuchezh/dynamic-weather-card/actions/workflows/hacs-validate.yml)
 [![License](https://img.shields.io/github/license/teuchezh/dynamic-weather-card.svg)](LICENSE)
 
-Динамическая карточка погоды для Home Assistant с реалистичными анимациями на Canvas.  
+Динамическая карточка погоды для Home Assistant с реалистичными анимациями.  
 ![demo](/docs/demo.gif)
 
 ## Возможности

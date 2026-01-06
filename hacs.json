@@ -2,6 +2,7 @@
   "name": "Dynamic Weather Card",
   "render_readme": true,
   "filename": "dynamic-weather-card.js",
-  "country": ["RU", "US", "GB", "DE", "FR", "ES", "IT", "NL", "PL", "CZ", "SE", "NO", "DK", "FI"]
+  "country": ["RU", "US", "GB", "DE", "FR", "ES", "IT", "NL", "PL", "CZ", "SE", "NO", "DK", "FI"],
+  "homeassistant": "2024.1.0"
 }
 
