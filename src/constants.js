@@ -21,25 +21,58 @@ export const CONDITION_EMOJI = {
   'windy-variant': '💨'
 };
 
-// Weather condition names (Russian)
+// Weather condition names
 export const CONDITION_NAMES = {
-  'sunny': 'Солнечно',
-  'clear': 'Ясно',
-  'overcast': 'Пасмурно',
-  'cloudy': 'Облачно',
-  'partlycloudy': 'Переменная облачность',
-  'rainy': 'Дождь',
-  'rain': 'Дождь',
-  'snowy': 'Снег',
-  'snow': 'Снег',
-  'foggy': 'Туман',
-  'fog': 'Туман',
-  'lightning': 'Гроза',
-  'lightning-rainy': 'Гроза с дождем',
-  'pouring': 'Сильный дождь',
-  'snowy-rainy': 'Мокрый снег',
-  'hail': 'Град',
-  'clear-night': 'Ясная ночь'
+  en: {
+    'sunny': 'Sunny',
+    'clear': 'Clear',
+    'overcast': 'Overcast',
+    'cloudy': 'Cloudy',
+    'partlycloudy': 'Partly Cloudy',
+    'rainy': 'Rainy',
+    'rain': 'Rain',
+    'snowy': 'Snowy',
+    'snow': 'Snow',
+    'foggy': 'Foggy',
+    'fog': 'Fog',
+    'lightning': 'Lightning',
+    'lightning-rainy': 'Thunderstorm',
+    'pouring': 'Heavy Rain',
+    'snowy-rainy': 'Sleet',
+    'hail': 'Hail',
+    'clear-night': 'Clear Night'
+  },
+  ru: {
+    'sunny': 'Солнечно',
+    'clear': 'Ясно',
+    'overcast': 'Пасмурно',
+    'cloudy': 'Облачно',
+    'partlycloudy': 'Переменная облачность',
+    'rainy': 'Дождь',
+    'rain': 'Дождь',
+    'snowy': 'Снег',
+    'snow': 'Снег',
+    'foggy': 'Туман',
+    'fog': 'Туман',
+    'lightning': 'Гроза',
+    'lightning-rainy': 'Гроза с дождем',
+    'pouring': 'Сильный дождь',
+    'snowy-rainy': 'Мокрый снег',
+    'hail': 'Град',
+    'clear-night': 'Ясная ночь'
+  }
+};
+
+// Translations
+export const TRANSLATIONS = {
+  en: {
+    'feels_like': 'Feels like',
+    'forecast_title': 'Today\'s Forecast'
+  },
+  ru: {
+    'feels_like': 'Ощущается как',
+    'forecast_title': 'Прогноз на сегодня'
+  }
 };
 
 // Icon mappings
@@ -90,5 +123,6 @@ export const DEFAULT_CONFIG = {
   showMinTemp: true,
   showForecast: false,
   showSunriseSunset: false,
+  language: 'auto',
   height: null
 };

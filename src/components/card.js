@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { CONDITION_NAMES, DEFAULT_CONFIG } from '../constants.js';
+import { CONDITION_NAMES, TRANSLATIONS, DEFAULT_CONFIG } from '../constants.js';
 import {
   getWindDirectionText,
   getWindDirectionIcon,
@@ -322,8 +322,33 @@ export class AnimatedWeatherCard extends LitElement {
     `;
   }
 
+  getLanguage() {
+    // Priority: config.language > hass.language > 'ru'
+    if (this.config.language && this.config.language !== 'auto') {
+      return this.config.language;
+    }
+
+    // Auto-detect from Home Assistant
+    if (this.hass && this.hass.language) {
+      const hassLang = this.hass.language.split('-')[0]; // 'en-US' -> 'en'
+      // Support only 'en' and 'ru', fallback to 'en' for other languages
+      if (hassLang === 'ru') return 'ru';
+      return 'en';
+    }
+
+    return 'ru'; // Default fallback
+  }
+
   getConditionName(condition) {
-    return CONDITION_NAMES[condition.toLowerCase()] || condition;
+    const lang = this.getLanguage();
+    const names = CONDITION_NAMES[lang] || CONDITION_NAMES.en;
+    return names[condition.toLowerCase()] || condition;
+  }
+
+  translate(key) {
+    const lang = this.getLanguage();
+    const translations = TRANSLATIONS[lang] || TRANSLATIONS.en;
+    return translations[key] || key;
   }
 
   render() {
@@ -351,9 +376,11 @@ export class AnimatedWeatherCard extends LitElement {
         <div class="${cardClasses}" style="min-height: ${minHeight}; ${bgStyle}">
           <div class="canvas-container"></div>
           <div class="content">
-            <div class="header">
-              <div class="location">${this.config.name || weather.friendlyName}</div>
-            </div>
+            ${this.config.name !== undefined ? html`
+              <div class="header">
+                <div class="location">${this.config.name || weather.friendlyName}</div>
+              </div>
+            ` : ''}
             <div>
               <div class="condition">${this.getConditionName(weather.condition)}</div>
               <div class="temperature">${Math.round(weather.temperature)}°</div>
@@ -363,7 +390,7 @@ export class AnimatedWeatherCard extends LitElement {
                 </div>
               ` : ''}
               ${this.config.showFeelsLike && weather.apparentTemperature ? html`
-                <div class="feels-like">Ощущается как ${Math.round(weather.apparentTemperature)}°</div>
+                <div class="feels-like">${this.translate('feels_like')} ${Math.round(weather.apparentTemperature)}°</div>
               ` : ''}
             </div>
             <div class="details">
@@ -403,7 +430,7 @@ export class AnimatedWeatherCard extends LitElement {
             </div>
             ${this.config.showForecast ? html`
               <div class="forecast-container">
-                <div class="forecast-title">Прогноз на сегодня</div>
+                <div class="forecast-title">${this.translate('forecast_title')}</div>
                 ${this.renderTodayForecast()}
               </div>
             ` : ''}
@@ -430,6 +457,7 @@ export class AnimatedWeatherCard extends LitElement {
       showMinTemp: config.show_min_temp !== false,
       showForecast: config.show_forecast === true,
       showSunriseSunset: config.show_sunrise_sunset !== false,
+      language: config.language || DEFAULT_CONFIG.language,
       sunriseEntity: config.sunrise_entity || null,
       sunsetEntity: config.sunset_entity || null
     };

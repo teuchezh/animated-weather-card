@@ -62,7 +62,7 @@
             letter-spacing: 0.5px;
         }
 
-        select, input[type="number"] {
+        select, input[type="number"], input[type="text"] {
             padding: 10px 12px;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
@@ -71,7 +71,7 @@
             background: white;
         }
 
-        select:focus, input[type="number"]:focus {
+        select:focus, input[type="number"]:focus, input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -266,6 +266,12 @@
                 </select>
             </div>
 
+            <!-- Card Name -->
+            <div class="control-group">
+                <label class="control-label">Название карточки</label>
+                <input type="text" id="name-input" value="Тестовая погода" placeholder="Оставьте пустым, чтобы скрыть">
+            </div>
+
             <!-- Temperature -->
             <div class="control-group">
                 <label class="control-label">Температура (°C)</label>
@@ -357,6 +363,13 @@
             </div>
 
             <button class="update-btn" onclick="updateCard()">Обновить карточку</button>
+
+            <!-- Demo Mode -->
+            <div class="control-group">
+                <button class="update-btn" id="demo-btn" onclick="toggleDemoMode()" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    🎬 Запустить режим демо
+                </button>
+            </div>
         </div>
     </div>
 
@@ -414,9 +427,24 @@
         let card = null;
         let mockHass = null;
         let currentManualTime = 720; // 12:00 default
+        let demoModeActive = false;
+        let demoInterval = null;
+        let demoStep = 0;
 
         const WEATHER_CONDITIONS = [
             'sunny', 'clear', 'partlycloudy', 'cloudy', 'rainy', 'pouring', 'snowy'
+        ];
+
+        // Demo sequence with different weather conditions and times
+        const DEMO_SEQUENCE = [
+            { condition: 'sunny', temp: 25, time: 'day', humidity: 45, wind: 10, name: '' },
+            { condition: 'partlycloudy', temp: 22, time: 'day', humidity: 55, wind: 15, name: '' },
+            { condition: 'cloudy', temp: 18, time: 'day', humidity: 65, wind: 20, name: '' },
+            { condition: 'rainy', temp: 15, time: 'day', humidity: 80, wind: 25, name: '' },
+            { condition: 'lightning-rainy', temp: 14, time: 'sunset', humidity: 85, wind: 30, name: '' },
+            { condition: 'snowy', temp: -5, time: 'day', humidity: 70, wind: 15, name: '' },
+            { condition: 'foggy', temp: 8, time: 'sunrise', humidity: 90, wind: 5, name: '' },
+            { condition: 'clear-night', temp: 12, time: 'night', humidity: 60, wind: 8, name: '' }
         ];
 
         // ============================================================================
@@ -488,6 +516,63 @@
         }
 
         // ============================================================================
+        // DEMO MODE FUNCTIONS
+        // ============================================================================
+
+        function toggleDemoMode() {
+            const demoBtn = document.getElementById('demo-btn');
+
+            if (demoModeActive) {
+                stopDemoMode();
+            } else {
+                startDemoMode();
+            }
+        }
+
+        function startDemoMode() {
+            demoModeActive = true;
+            demoStep = 0;
+            const demoBtn = document.getElementById('demo-btn');
+            demoBtn.textContent = '⏹️ Остановить демо';
+            demoBtn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)';
+
+            // Run demo immediately
+            runDemoStep();
+
+            // Then cycle every 3 seconds
+            demoInterval = setInterval(runDemoStep, 3000);
+        }
+
+        function stopDemoMode() {
+            demoModeActive = false;
+            if (demoInterval) {
+                clearInterval(demoInterval);
+                demoInterval = null;
+            }
+            const demoBtn = document.getElementById('demo-btn');
+            demoBtn.textContent = '🎬 Запустить режим демо';
+            demoBtn.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+        }
+
+        function runDemoStep() {
+            const demo = DEMO_SEQUENCE[demoStep];
+
+            // Update controls
+            document.getElementById('condition-select').value = demo.condition;
+            document.getElementById('name-input').value = demo.name;
+            document.getElementById('temperature-input').value = demo.temp;
+            document.getElementById('humidity-input').value = demo.humidity;
+            document.getElementById('wind-input').value = demo.wind;
+            document.getElementById('time-select').value = demo.time;
+
+            // Update card
+            updateCard();
+
+            // Move to next step
+            demoStep = (demoStep + 1) % DEMO_SEQUENCE.length;
+        }
+
+        // ============================================================================
         // TIME CONTROL FUNCTIONS
         // ============================================================================
 
@@ -539,6 +624,7 @@
             // Get control values
             const config = {
                 condition: document.getElementById('condition-select').value,
+                name: document.getElementById('name-input').value.trim(),
                 temperature: parseInt(document.getElementById('temperature-input').value),
                 humidity: parseInt(document.getElementById('humidity-input').value),
                 windSpeed: parseInt(document.getElementById('wind-input').value),
@@ -576,9 +662,8 @@
             );
 
             // Set card configuration
-            card.setConfig({
+            const cardConfig = {
                 entity: 'weather.test',
-                name: 'Тестовая погода',
                 height: config.height,
                 show_feels_like: config.showFeelsLike,
                 show_wind: config.showWind,
@@ -588,7 +673,14 @@
                 show_min_temp: config.showMinTemp,
                 show_forecast: config.showForecast,
                 show_sunrise_sunset: config.showSunriseSunset
-            });
+            };
+
+            // Add name only if not empty
+            if (config.name) {
+                cardConfig.name = config.name;
+            }
+
+            card.setConfig(cardConfig);
 
             card.hass = mockHass;
             container.appendChild(card);

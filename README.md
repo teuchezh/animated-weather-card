@@ -1,5 +1,7 @@
 # Dynamic Weather Card
 
+[English](README.en.md) | **Русский**
+
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 [![GitHub release](https://img.shields.io/github/release/teuchezh/dynamic-weather-card.svg)](https://github.com/teuchezh/dynamic-weather-card/releases)
 [![Build and Release](https://github.com/teuchezh/dynamic-weather-card/workflows/Build%20and%20Release/badge.svg)](https://github.com/teuchezh/dynamic-weather-card/actions/workflows/build.yml)
@@ -7,7 +9,8 @@
 [![HACS Validation](https://github.com/teuchezh/dynamic-weather-card/workflows/HACS%20Validation/badge.svg)](https://github.com/teuchezh/dynamic-weather-card/actions/workflows/hacs-validate.yml)
 [![License](https://img.shields.io/github/license/teuchezh/dynamic-weather-card.svg)](LICENSE)
 
-Динамическая карточка погоды для Home Assistant с реалистичными анимациями на Canvas.
+Динамическая карточка погоды для Home Assistant с реалистичными анимациями на Canvas.  
+![demo](/docs/demo.gif)
 
 ## Возможности
 
@@ -15,6 +18,7 @@
 - ☀️ Динамический фон в зависимости от времени суток (восход, день, закат, ночь)
 - 🌧️ Реалистичные анимации: дождь, снег, град, туман, гроза
 - 📊 Почасовой прогноз на сегодня
+- 🌍 Автоматическое определение языка из настроек Home Assistant (русский/английский)
 - ⚙️ Полная настройка отображаемых элементов
 - 📱 Адаптивный дизайн
 
@@ -65,6 +69,7 @@ resources:
 ```yaml
 type: custom:dynamic-weather-card
 entity: weather.home
+# Язык определяется автоматически из настроек Home Assistant
 ```
 
 ### Полная конфигурация
@@ -74,6 +79,7 @@ type: custom:dynamic-weather-card
 entity: weather.home
 name: Моя погода
 height: 250
+language: auto  # 'auto' (по умолчанию), 'ru' или 'en'
 show_feels_like: true
 show_min_temp: true
 show_humidity: true
@@ -84,6 +90,15 @@ show_forecast: true
 show_sunrise_sunset: true
 sunrise_entity: sensor.yandex_pogoda_next_sunrise  # Опционально
 sunset_entity: sensor.yandex_pogoda_next_sunset    # Опционально
+```
+
+### Пример с фиксированным языком
+
+```yaml
+type: custom:dynamic-weather-card
+entity: weather.home
+name: My Weather
+language: en  # Принудительно использовать английский
 ```
 
 ### Пример для Яндекс.Погоды
@@ -106,14 +121,15 @@ sunset_entity: sensor.yandex_pogoda_next_sunset
 | `entity` | string | **обязательно** | ID сущности погоды |
 | `name` | string | - | Название (необязательно) |
 | `height` | number | 200 | Высота карточки в пикселях |
+| `language` | string | `auto` | Язык интерфейса (`auto`, `ru` или `en`). `auto` определяет язык из настроек Home Assistant |
 | `show_feels_like` | boolean | true | Показывать ощущаемую температуру |
 | `show_min_temp` | boolean | true | Показывать минимальную температуру |
-| `show_humidity` | boolean | true | Показывать влажность |
-| `show_wind` | boolean | true | Показывать скорость ветра |
-| `show_wind_direction` | boolean | true | Показывать направление ветра |
-| `show_wind_gust` | boolean | true | Показывать порывы ветра |
+| `show_humidity` | boolean | false | Показывать влажность |
+| `show_wind` | boolean | false | Показывать скорость ветра |
+| `show_wind_direction` | boolean | false | Показывать направление ветра |
+| `show_wind_gust` | boolean | false | Показывать порывы ветра |
 | `show_forecast` | boolean | false | Показывать прогноз на сегодня |
-| `show_sunrise_sunset` | boolean | true | Показывать время восхода и заката |
+| `show_sunrise_sunset` | boolean | false | Показывать время восхода и заката |
 | `sunrise_entity` | string | - | ID сенсора восхода солнца (опционально) |
 | `sunset_entity` | string | - | ID сенсора заката солнца (опционально) |
 

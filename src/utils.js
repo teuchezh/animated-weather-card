@@ -237,8 +237,17 @@ export function getTimeOfDayWithSunData(sunData) {
   // If we have real sun data, use it
   if (sunData.hasSunData && sunData.sunrise && sunData.sunset) {
     const currentTime = now.getTime();
-    const sunriseTime = sunData.sunrise.getTime();
-    const sunsetTime = sunData.sunset.getTime();
+    let sunriseTime = sunData.sunrise.getTime();
+    let sunsetTime = sunData.sunset.getTime();
+
+    // Check if sunrise/sunset are for tomorrow (common with Yandex Weather and similar integrations)
+    // If sunrise is more than 12 hours in the future, subtract 24 hours to get today's time
+    if (sunriseTime - currentTime > 12 * 60 * 60 * 1000) {
+      sunriseTime -= 24 * 60 * 60 * 1000;
+    }
+    if (sunsetTime - currentTime > 12 * 60 * 60 * 1000) {
+      sunsetTime -= 24 * 60 * 60 * 1000;
+    }
 
     // Calculate sunrise/sunset window (±1 hour)
     const sunriseStart = sunriseTime - 60 * 60 * 1000; // 1 hour before
