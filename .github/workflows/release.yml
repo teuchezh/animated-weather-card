@@ -1,0 +1,174 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v0.2.2)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for changelog generation
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Verify build output
+        run: |
+          if [ ! -f dynamic-weather-card.js ]; then
+            echo "Build failed: dynamic-weather-card.js not found"
+            exit 1
+          fi
+          echo "Build successful: $(wc -l < dynamic-weather-card.js) lines"
+
+      - name: Get version from tag or input
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+            echo "tag=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          CURRENT_TAG="${{ steps.version.outputs.tag }}"
+
+          echo "Generating changelog from ${PREV_TAG} to ${CURRENT_TAG}"
+
+          # Generate changelog from commits
+          if [ -z "$PREV_TAG" ]; then
+            # First release - get all commits
+            COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            # Get commits since last tag
+            COMMITS=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+
+          # Categorize commits
+          FEATURES=$(echo "$COMMITS" | grep -E "^- (feat|feature):" || echo "")
+          FIXES=$(echo "$COMMITS" | grep -E "^- (fix|bugfix):" || echo "")
+          DOCS=$(echo "$COMMITS" | grep -E "^- docs?:" || echo "")
+          CHORES=$(echo "$COMMITS" | grep -E "^- (chore|build|ci):" || echo "")
+          OTHERS=$(echo "$COMMITS" | grep -vE "^- (feat|feature|fix|bugfix|docs?|chore|build|ci):" || echo "")
+
+          # Build changelog
+          CHANGELOG="## What's Changed"$'\n'$'\n'
+
+          if [ -n "$FEATURES" ]; then
+            CHANGELOG+="### ✨ Features"$'\n'
+            CHANGELOG+="$FEATURES"$'\n'$'\n'
+          fi
+
+          if [ -n "$FIXES" ]; then
+            CHANGELOG+="### 🐛 Bug Fixes"$'\n'
+            CHANGELOG+="$FIXES"$'\n'$'\n'
+          fi
+
+          if [ -n "$DOCS" ]; then
+            CHANGELOG+="### 📚 Documentation"$'\n'
+            CHANGELOG+="$DOCS"$'\n'$'\n'
+          fi
+
+          if [ -n "$CHORES" ]; then
+            CHANGELOG+="### 🔧 Chores & Maintenance"$'\n'
+            CHANGELOG+="$CHORES"$'\n'$'\n'
+          fi
+
+          if [ -n "$OTHERS" ]; then
+            CHANGELOG+="### Other Changes"$'\n'
+            CHANGELOG+="$OTHERS"$'\n'$'\n'
+          fi
+
+          # Add compare link if there's a previous tag
+          if [ -n "$PREV_TAG" ]; then
+            CHANGELOG+="**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${CURRENT_TAG}"
+          fi
+
+          # Save to file for release notes
+          echo "$CHANGELOG" > /tmp/changelog.md
+
+          # Output for GitHub Actions (escape newlines)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update CHANGELOG.md
+        run: |
+          CURRENT_TAG="${{ steps.version.outputs.tag }}"
+          RELEASE_DATE=$(date +%Y-%m-%d)
+
+          # Create or update CHANGELOG.md
+          if [ ! -f CHANGELOG.md ]; then
+            echo "# Changelog" > CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "All notable changes to this project will be documented in this file." >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+          fi
+
+          # Add new release section at the top (after the header)
+          {
+            head -n 3 CHANGELOG.md
+            echo ""
+            echo "## [${CURRENT_TAG}] - ${RELEASE_DATE}"
+            echo ""
+            cat /tmp/changelog.md
+            echo ""
+            tail -n +4 CHANGELOG.md
+          } > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
+
+      - name: Commit CHANGELOG.md
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "docs: update CHANGELOG.md for ${{ steps.version.outputs.tag }}" || echo "No changes to commit"
+          git push origin HEAD:main || echo "Could not push to main"
+
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: |
+            dynamic-weather-card.js
+            hacs.json
+            README.md
+            README.ru.md
+            LICENSE
+            CHANGELOG.md
+          draft: false
+          prerelease: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
