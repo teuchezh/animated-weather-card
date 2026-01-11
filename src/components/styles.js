@@ -64,6 +64,23 @@ export const cardStyles = css`
     display: block;
   }
 
+  /* Dark overlay for better text contrast */
+  .weather-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.12) 100%
+    );
+    z-index: 0;
+    border-radius: 16px;
+  }
+
   .content {
     position: relative;
     z-index: 1;
@@ -72,7 +89,10 @@ export const cardStyles = css`
     flex-direction: column;
     justify-content: space-between;
     color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.4),
+      0 2px 6px rgba(0, 0, 0, 0.3),
+      0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   .header {
