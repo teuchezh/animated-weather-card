@@ -42,6 +42,8 @@ export class AnimatedWeatherCard extends LitElement {
     this.canvasWidth = 0;
     this.canvasHeight = 0;
     this.animations = {};
+    this.holdTimer = null;
+    this.holdDelay = 500; // milliseconds
   }
 
   connectedCallback() {
@@ -372,8 +374,13 @@ export class AnimatedWeatherCard extends LitElement {
       : '';
 
     return html`
-      <ha-card>
-        <div class="${cardClasses}" style="min-height: ${minHeight}; ${bgStyle}">
+      <ha-card
+        @click=${this.handleTap}
+        @pointerdown=${this.handlePointerDown}
+        @pointerup=${this.handlePointerUp}
+        @pointercancel=${this.handlePointerUp}
+      >
+        <div class="${cardClasses}" style="min-height: ${minHeight}; ${bgStyle}; cursor: pointer;">
           <div class="canvas-container"></div>
           <div class="content">
             ${this.config.name !== undefined ? html`
@@ -459,8 +466,105 @@ export class AnimatedWeatherCard extends LitElement {
       showSunriseSunset: config.show_sunrise_sunset !== false,
       language: config.language || DEFAULT_CONFIG.language,
       sunriseEntity: config.sunrise_entity || null,
-      sunsetEntity: config.sunset_entity || null
+      sunsetEntity: config.sunset_entity || null,
+      tapAction: config.tap_action || { action: 'more-info' },
+      holdAction: config.hold_action || { action: 'none' },
+      doubleTapAction: config.double_tap_action || { action: 'none' }
     };
+  }
+
+  handleAction(actionConfig) {
+    if (!actionConfig || !this.hass) return;
+
+    const action = actionConfig.action || 'more-info';
+
+    switch (action) {
+      case 'more-info':
+        this.fireEvent('hass-more-info', { entityId: actionConfig.entity || this.config.entity });
+        break;
+      case 'toggle':
+        this.hass.callService('homeassistant', 'toggle', {
+          entity_id: actionConfig.entity || this.config.entity
+        });
+        break;
+      case 'call-service':
+        if (actionConfig.service) {
+          const [domain, service] = actionConfig.service.split('.');
+          this.hass.callService(domain, service, actionConfig.service_data || {});
+        }
+        break;
+      case 'navigate':
+        if (actionConfig.navigation_path) {
+          window.history.pushState(null, '', actionConfig.navigation_path);
+          this.fireEvent('location-changed', { replace: false });
+        }
+        break;
+      case 'url':
+        if (actionConfig.url_path) {
+          window.open(actionConfig.url_path);
+        }
+        break;
+      case 'none':
+      default:
+        break;
+    }
+  }
+
+  fireEvent(type, detail = {}) {
+    const event = new CustomEvent(type, {
+      detail,
+      bubbles: true,
+      composed: true
+    });
+    this.dispatchEvent(event);
+  }
+
+  handleTap(e) {
+    // Prevent tap on forecast items or info items
+    if (e.target.closest('.forecast-item') || e.target.closest('.info-item')) {
+      return;
+    }
+
+    // Handle double tap
+    if (this.lastTap && (Date.now() - this.lastTap) < 300) {
+      this.handleDoubleTap(e);
+      this.lastTap = null;
+      return;
+    }
+
+    this.lastTap = Date.now();
+
+    // Delay single tap to allow for double tap
+    setTimeout(() => {
+      if (this.lastTap) {
+        this.handleAction(this.config.tapAction);
+        this.lastTap = null;
+      }
+    }, 300);
+  }
+
+  handlePointerDown(e) {
+    this.holdTimer = setTimeout(() => {
+      this.handleHold(e);
+      this.holdFired = true;
+    }, this.holdDelay);
+  }
+
+  handlePointerUp(e) {
+    clearTimeout(this.holdTimer);
+    if (this.holdFired) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.holdFired = false;
+    }
+  }
+
+  handleHold(e) {
+    this.handleAction(this.config.holdAction);
+  }
+
+  handleDoubleTap(e) {
+    this.handleAction(this.config.doubleTapAction);
   }
 
   getCardSize() {
