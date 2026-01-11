@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.3.0] - 2026-01-11
+
+## What's Changed
+
+### ✨ Features
+- feat: add multilingual support and adjust card width on demo page (ab9163c)
+- feat: replace forecast emoji with animated SVG weather icons (dc5bbc2)
+- feat: replace emoji with SVG icons from Basmilius Weather Icons (1f34fbc)
+- feat: add tap_action, hold_action and double_tap_action support (6ed1e8e)
+
+### 🐛 Bug Fixes
+- fix: improve text contrast with subtle overlay (962688a)
+
+### 📚 Documentation
+- docs: add credits for Basmilius Weather Icons (a74b766)
+- docs: update CHANGELOG.md for v0.2.3 (17f38f8)
+
+### 🔧 Chores & Maintenance
+- chore: bump version to 0.3.0 (d668603)
+
+**Full Changelog**: https://github.com/teuchezh/dynamic-weather-card/compare/v0.2.3...v0.3.0
+
+
 ## [v0.2.3] - 2026-01-11
 
 ## What's Changed
